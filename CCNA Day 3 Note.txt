@@ -1,0 +1,446 @@
+Day 3
+***************************************************
+
+OSFPF commands
+show ip ospf database
+show ip route osfp
+show ip route neighbor
+
+D = Down
+I = Init
+T = two way
+E = extart
+E = exchange
+L = loading 
+F = Full
+
+
+other commands
+show ip route | inc C
+show ip route | inc L
+
+***************************************************
+
+Review:
+
+user
+1500 = 11b
+10.0.0.0/8
+
+C: 1500 = 11b 
+S: /32 - 11 = /21 (3rd, 8i)
+I: insert si 8i sa 3rd 10.0.8.0/21
+network:10.0.8.0 255.255.248.0
+first:10.0.8.1
+last:10.0.15.254
+broadcast:10.0.15.255
+
+next:10.0.16.0
+
+***************************************
+
+user
+4500 = 13b
+10.0.0.0/8
+
+C: 4500 = 13b 
+S: /32 - 13 = /19 (3rd, 32i)
+I: insert si 32i sa 3rd 10.0.32.0/19
+network:10.0.32.0 255.255.224.0
+first:10.0.32.1
+last:10.0.63.254
+broadcast:10.0.63.255
+
+next:10.0.64.0
+
+
+***************************************
+
+user
+200 = 8b
+10.0.0.0/8
+
+C: 200 = 8b
+S: /32 - 8 = /24 (3rd, 1i)
+I: insert si 1i sa 3rd 10.0.1.0/24
+network:10.0.1.0 255.255.255.0
+first:10.0.1.1
+last:10.0.1.254
+broadcast:10.0.1.255
+
+next:10.0.2.0
+
+
+***************************************
+CSI: convert, subtract, insert = host, dev, users, pcs, routers
+CAI: convert, add, insert = subnets, office, istes, maximize
+
+
+activity:
+fec0:aabb:fafa:dada::/64 subnet/maximize to 32 offices/subnets
+convert: 
+
+
+example 2:
+fec0:aabb:fafa:dada::/64 subnet/maximize to 512 offices/subnets
+
+
+
+
+********************************************
+LAB 1
+
+
+cafe:cafe:cafe::/48 subnet mo sa 512 subnets: 0000,0080,0100,0180,0200,0280,0300
+
+/48 + 9 = /57
+cafe:cafe:cafe:0000::f/57
+cafe:cafe:cafe:0080::f/57
+cafe:cafe:cafe:0100::f/57
+cafe:cafe:cafe:0180::f/57
+cafe:cafe:cafe:
+
+config t
+int lo 1
+ ipv6 add cafe:cafe:cafe:0000::f/57
+int lo 2
+ ipv6 add cafe:cafe:cafe:0080::f/57
+int lo 3
+ ipv6 add cafe:cafe:cafe:0100::f/57
+int lo 4
+ ipv6 add cafe:cafe:cafe:0180::f/57
+int lo 5
+ ipv6 add cafe:cafe:cafe:0200::f/57
+int lo 6
+ ipv6 add cafe:cafe:cafe:0280::f/57
+ do sh ipv6 int brief
+
+
+
+********************************************
+bebe:baba:caca:dada::/64 subnet to : 32 subnet
+c 32 is 2r = 5
+a /64 + /5 = /69
+ipasok sa 
+
+config t
+int lo 1
+ ipv6 add bebe:baba:caca:dada:0000::a/69
+int lo 2
+ ipv6 add bebe:baba:caca:dada:0800::a/69
+int lo 3
+ ipv6 add bebe:baba:caca:dada:1000::a/69
+int lo 4
+ ipv6 add bebe:baba:caca:dada:1800::a/69
+int lo 5
+ ipv6 add bebe:baba:caca:dada:2000::a/69
+
+
+********************************************
+what is a routing table: shows all ip route
+command
+windows: route print 
+linux: netstat -rn
+cisco: show ip route
+
+
+********************************************
+
+
+P1 static route: VLAN 20, 100
+@P1
+conf t
+ip route 10.2.2.0 255.255.255.0 10.2.1.1 1
+ip route 10.2.2.0 255.255.255.0 10.2.1.2 5 
+ip route 192.168.1.128 255.255.255.224 10.2.1.1 1
+ip route 192.168.1.128 255.255.255.224 10.2.1.2 5
+
+
+!!dahil endpoint default route
+ip route 0.0.0.0 0.0.0.0 10.2.1.1 1 
+ip route 0.0.0.0 0.0.0.0 10.2.1.2 5
+end
+show run inc route
+
+
+
+conf t
+no logging console
+enable secret pass
+interface vlan 1
+no shut
+ip add 10.11.1.4 255.255.255.0
+
+
+router eigrp 100
+network 10.0.0.0
+router ospf 1
+network 0.0.0.0 255.255.255.255 area 0
+router bgp 1
+network 10.0.0.0
+end
+
+
+
+********************************************
+!@R4
+conf t
+int e3/3
+no shut 
+ip add dhcp
+ip ospf 1 area 0
+exit
+router eigrp 100
+network 208.8.8.0 0.0.0.255
+end
+
+
+
+
+***************************************************
+STATIC: 1
+EIGRP:
+RIP:
+***************************************************
+find the network 
+10.1.4.10/30
+1. convert to rivan format /30 = 4th, 4i
+10.1.4.x /30
+
+10.1.4.0
+10.1.4.4
+10.1.4.8 (find where 10.1.4.10 falls)
+10.1.4.12
+
+VLAN 100 
+192.168.1.130 /27 4th, 32i
+
+192.168.1.0
+192.168.1.32
+192.168.1.64
+192.168.1.96
+         .128 (find where 192.168.1.130 falls)
+         .160
+
+192.168.1.128/27 = network
+
+VLAN 10 = 10.2.1.2 (3rd, 1i)
+              
+10.2.
+
+***************************************************
+
+OSPF = reference bandwidth (default 100mb) / int bw (10000 kb)
+
+***************************************************
+
+
+example:
+@D2
+conf t
+ router eigrp 100
+  no auto-summary
+  network 10.1.4.8 0.0.0.3
+  network 10.2.1.0 0.0.0.255
+ network 10.2.2.0 0.0.0.255
+  network 192.168.1.128 0.0.0.31
+  end
+
+
+ 10.10.8.1/32 [110/11] via 10.1.1.2, 00:00:33, Ethernet1/0
+O IA     10.10.9.1/32 [110/11] via 10.1.1.2, 00:00:33, Ethernet1/0
+O IA     10.10.10.1/32 [110/11] via 10.1.1.2, 00:00:33, Ethernet1/0
+O IA     10.10.11.1/32 [110/11] via 10.1.1.2, 00:00:33, Ethernet1/0
+
+
+***************************************************
+command to sumarize route
+!@R2
+conf t
+router ospf 1
+area 12 range 10.10.8.0 255.255.252.0
+end
+
+
+
+
+10.10.33.1
+10.10.33.129
+10.10.34.1
+10.10.34.129
+
+3rd 
+
+34 - 33 = 1
+
+10.10.32.0
+10.10.34.0
+***************************************************
+BGP
+
+@S1
+conf t
+int e1/0
+no shut
+ip add 69.69.69.1 255.255.255.0
+exit
+router bgp 11
+neighbor 69.69.69.2 remote-as 12
+network 69.69.69.0 mask 255.255.255.0
+end
+
+
+
+@D1
+conf t
+int e3/3
+no sw
+no shut
+ip add dhcp
+exit
+monitor session 1 source interface e1/0 
+monitor session 1 destination int e3/3
+end
+
+@D1
+conf t
+int e1/0
+no switchport
+ip add 69.69.69.2 255.255.255.0
+no shut 
+exit
+router bgp 11
+neighbor 69.69.69.1 remote-as 12
+network 69.69.69.0 mask 255.255.255.0
+end
+
+***************************************************
+BGP - no hello but has  the following
+N otification message
+O pen message
+K eep alive
+U pdate
+
+
+BGP Port 179
+
+***************************************************
+BGP command
+show bgp summary
+
+***************************************************
+
+NAT Configuration
+
+(D1) 10.1.4.6 = 208.8.8.x
+(D2) 10.1.4.10 = 207.7.7.x
+
+conf t
+ ip nat inside source static 10.1.4.6 209.9.9.24
+ ip nat inside source static 10.1.4.10 209.9.9.25
+ end
+show ip nat translations
+
+
+show ip route to get ip address
+P1 10.2.1.1
+P2 10.2.1.2
+S2 10.2.2.2
+
+
+
+@R1
+conf t
+ ip nat inside source static 10.2.1.1 207.7.7.201
+ ip nat inside source static 10.2.1.2 208.8.8.202
+ ip nat inside source static 10.2.2.2 209.9.9.203
+ end
+show ip nat translations
+
+
+
+Assignment
+***************************************************
+PAT (port address translation)
+
+***************************************************
+ipv4
+
+/27 (4th, 32i)
+
+ipv6
+/65 (hextet, hexadecimal position, i) = 5th, 1st, 8i
+/126 = 8th, 4th, 4i
+/78 = 5th, 4th, 4i
+
+configure 10 offices using 2001.db8::/78
+C 10 = 4bits
+A /78 + 4 = /82
+I /82 = 6th, 1st, 4i
+ 2001:0db8:0000:0000:0000:0000:0000:0000 /82
+                         :4000:
+3rd                      :8000:
+                         :C000:
+
+using the 3rd office/subnet 
+assign the ipv6 GUA IP on R4' e0/0
+Assign the ipv4 GUA on I4/google-dns e0/0
+
+Network 2001:db8::8000:0:0 /82
+@R4
+conf t
+ipv6 unicast-routing
+int e0/0
+no shut
+ipv6 add 2001:db8::8000:0:0/82 eui-64
+end
+show ipv6 int brief
+bp6
+
+
+2001:DB8::8CFF:FE00:900
+
+
+***************************************************
+configure 32 offices using 2001::/20
+C 32 = 5bits
+A /20 + 5 = /25
+I /24 = 2nd,3rd, 8i
+
+
+1st  :0080
+2nd  :0100
+3rd  :0180
+
+network 2001:100::/25
+first (+1): 2001:100::1
+last (- any): 2001:0100:0000:0001:FFFF:FFFF:FFFF:FF7F
+Anycast (last 128 ip address): 
+2001:0100:0000:0001:FFFF:FFFF:FFFF:FF80/64
+2001:0100:0000:0001:FFFF:FFFF:FFFF:FFFF/64
+
+note can't use /64 > for anycast
+
+not network: 2001:180::/25
+***************************************************
+
+configure 12 offices using 2001::/90
+C 12 = 4bits
+A /90 + 4 = /94
+I /94 = 6, 4, 4i
+
+2001:0000:0000:0000:0000:0000:0000:0000 /94
+                        :0004:
+                        :0008:
+                        :0010:
+
+
+Network: 2001::8:0:0/94
+first: 2001::8:0:1/94
+last: FF7F
+anycast: FF80 - FFFF
+
+
+***************************************************
+assignment
+ping and traceroute 8.8.8.8 all lab device
