@@ -1503,10 +1503,10 @@ conf t
 ~~~
 !@R4
 conf t
- router ___  __
-  router-id __.__.__.__
-  network __.__.__.__  __.__.__.__ area __
-  network __.__.__.__  __.__.__.__ area __
+ router ospf 1
+  router-id 4.4.4.4
+  network 10.1.1.8 0.0.0.3 area 0
+  network 4.4.4.4 0.0.0.0 area 0
   end
 ~~~
 
@@ -1820,7 +1820,7 @@ conf t
  int e1/2
   ip ospf network point-to-point
   end
-~~~
+~~~con
 
 ~~~
 !@R3
@@ -1884,8 +1884,7 @@ yes
 
 ~~~
 !@R4
-show ip route ospf
-~~~
+show ip route ospf~~~
 
 ~~~
 !@R3 & R4
@@ -1899,7 +1898,7 @@ Determine the issue why R3 & R4 fail to form an adjacency:
 <br>
 <br>
 
-Fix the adjacency:
+Fix the adjacency: change r3 from broadcast to point-to-point
 
 ~~~
 !@R3
@@ -2051,12 +2050,12 @@ conf t
 
 | Legend | Routing Protocol | Administrative Distance | Metric |
 | ---    | ---              | ---                     | ---    |
-| C      | Connected        |                         |        |
-| S      | Static           |                         |        |
-| D      | EIGRP            |                         |        |
-| D EX   | External EIGRP   |                         |        |
-| O      | OSPF             |                         |        |
-| O E2   | External T5 OSPF |                         |        |
+| C      | Connected        |  0                      |        |
+| S      | Static           |  1                      |        |
+| D      | EIGRP            |  90                     |        |
+| D EX   | External EIGRP   |  170                    |        |
+| O      | OSPF             |  110                    |        |
+| O E2   | External T5 OSPF |  110                    |        |
 
 ~~~
 !@R4, D1, R3
@@ -2317,6 +2316,7 @@ I3 = ASN 1
 <br>
 
 ~~~
+
 !@R1
 conf t
  router bgp 1
@@ -2325,7 +2325,7 @@ conf t
    neighbor 207.7.7.2 remote-as 2
    neighbor 209.9.9.3 remote-as 3
    address-family ipv4
-	neighbor 208.8.8.4 activate
+	neighbor 208.8.8.4 activate (activate is not necessarily needed once you set remote-as)
     neighbor 207.7.7.2 activate
     neighbor 209.9.9.3 activate
     network 207.7.7.0 mask 255.255.255.0
@@ -2366,19 +2366,19 @@ conf t
 ~~~
 !@I3 - GLOBE
 conf t
- router bgp __
+ router bgp 3
   bgp log-neighbor-changes
-  ______  __.__.__.__ remote-as __
-  ______  __.__.__.__ remote-as __
-  ______  __.__.__.__ remote-as __
-  address-family __
-   ______  __.__.__.__ activate
-   ______  __.__.__.__ activate
-   ______  __.__.__.__ activate
-   ______  __.__.__.__ mask __.__.__.__
-   ______  __.__.__.__ mask __.__.__.__
-   ______  __.__.__.__ mask __.__.__.__
-   ______  __.__.__.__ mask __.__.__.__
+  neighbor 209.9.9.1 remote-as 1
+  neighbor 35.3.5.5 remote-as 45
+  neighbor 32.3.2.2 remote-as 2
+  address-family ipv4
+   neighbor 209.9.9.1 activate
+   neighbor 35.3.5.5 activate
+   neighbor 32.3.2.2 activate
+   network 209.9.9.0 mask 255.255.255.0
+   network 35.3.5.0 mask 255.255.255.0
+   network 32.3.2.0 mask 255.255.255.0
+   network 33.33.33.33 mask 255.255.255.255
    end
 ~~~
 
